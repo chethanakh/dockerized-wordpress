@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  wp-app:
+    image: wordpress
+    user: "${UID}:${GID}"
+    container_name: wp-app
+    ports:
+      - 8001:80
+    volumes:
+      - ./src:/var/www/html
+  wp-mysql:
+    image: mysql:8.0.24
+    user: "${UID}:${GID}"
+    container_name: wp-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - 3307:3306
+    volumes:
+      - wp-mysql-data:/var/lib/mysql
+  wp-phpmyadmin:
+    depends_on:
+      - wp-mysql
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - 8002:80
+    environment:
+      PMA_HOST: wp-mysql
+      MYSQL_ROOT_PASSWORD: root
+volumes:
+  wp-mysql-data:
